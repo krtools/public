@@ -1,11 +1,9 @@
 import type {Response} from 'express';
 
 export function createSSE(res: Response) {
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    Connection: 'keep-alive'
-  });
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
 
   let closed = false;
 
@@ -13,8 +11,10 @@ export function createSSE(res: Response) {
     if (closed) return;
     if (eventName) res.write(`event: ${eventName}`);
     for (const [k, v] of Object.entries(entries)) {
-      res.write(`${k}: ${JSON.stringify(v)}`);
+      console.log(`WRITE DATA for ${k}: ${JSON.stringify(v).length}`);
+      res.write(`${k}: ${JSON.stringify(v)}\n`);
     }
+    res.write(`\n`);
     res.flush();
   }
 
