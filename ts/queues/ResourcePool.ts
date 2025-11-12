@@ -1,7 +1,7 @@
 export interface ResourcePoolOptions<T> {
   limit: number;
   create: () => T | Promise<T>;
-  dispose: (item: T) => unknown;
+  dispose?: (item: T) => unknown;
 }
 
 export interface ResourceItem<T> {
@@ -41,9 +41,14 @@ export class ResourcePool<T> {
 
     if (this.total < this.options.limit) {
       this.total++;
-      const r = await this.options.create();
-      this.inUse.add(r);
-      return r;
+      try {
+        const r = await this.options.create();
+        this.inUse.add(r);
+        return r;
+      } catch (e) {
+        this.total--;
+        throw e;
+      }
     }
 
     const pw = Promise.withResolvers<T>();
@@ -56,7 +61,8 @@ export class ResourcePool<T> {
     this.inUse.delete(value);
 
     if (this.closed) {
-      this.options.dispose(value);
+      await this.options.dispose?.(value);
+      this.total--;
     } else if (this.queue.length) {
       const next = this.queue.shift()!;
       this.inUse.add(value);
@@ -76,12 +82,17 @@ export class ResourcePool<T> {
   }
 
   async close() {
+    if (this.closed) return;
     this.closed = true;
+
     // reject queued acquisitions
     this.queue.forEach((pw) => pw.reject(new Error('ResourcePool closed')));
 
     this.queue = [];
-    await Promise.all([...this.pool, ...this.inUse].map((r) => this.options.dispose(r)));
+    if (this.options.dispose) {
+      await Promise.all([...this.pool, ...this.inUse].map((r) => this.options.dispose!(r)));
+    }
+    this.total = 0;
     this.pool = [];
     this.inUse.clear();
   }
