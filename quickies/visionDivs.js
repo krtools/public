@@ -1,4 +1,4 @@
-function renderVisionFlow(visionResponse, fontSize = 16, lineGap = 4) {
+function renderVisionAsLines(visionResponse, fontSize = 16, lineGap = 4) {
   document.body.innerHTML = "";
 
   const root = document.createElement("div");
@@ -17,7 +17,7 @@ function renderVisionFlow(visionResponse, fontSize = 16, lineGap = 4) {
     return;
   }
 
-  // Sort words top→bottom, left→right
+  // Sort top→bottom, left→right
   anns.sort((a, b) => {
     const aY = Math.min(...(a.boundingPoly?.vertices?.map(v => v.y || 0) || [0]));
     const bY = Math.min(...(b.boundingPoly?.vertices?.map(v => v.y || 0) || [0]));
@@ -30,7 +30,7 @@ function renderVisionFlow(visionResponse, fontSize = 16, lineGap = 4) {
   });
 
   let currentLineY = -Infinity;
-  let lineDiv;
+  let currentWords = [];
 
   anns.forEach(a => {
     const verts = a.boundingPoly?.vertices || [];
@@ -40,16 +40,23 @@ function renderVisionFlow(visionResponse, fontSize = 16, lineGap = 4) {
 
     // new line if y jumps
     if (minY - currentLineY > fontSize) {
-      lineDiv = document.createElement("div");
-      lineDiv.style.display = "flex";
-      lineDiv.style.gap = "4px"; // horizontal space between words
-      lineDiv.style.marginBottom = lineGap + "px";
-      root.appendChild(lineDiv);
+      if (currentWords.length) {
+        const lineDiv = document.createElement("div");
+        lineDiv.textContent = currentWords.join(" ");
+        lineDiv.style.display = "block";
+        lineDiv.style.marginBottom = lineGap + "px";
+        root.appendChild(lineDiv);
+      }
+      currentWords = [];
       currentLineY = minY;
     }
 
-    const wordDiv = document.createElement("div");
-    wordDiv.textContent = a.description || "";
-    lineDiv.appendChild(wordDiv);
+    currentWords.push(a.description || "");
   });
-}
+
+  // append last line
+  if (currentWords.length) {
+    const lineDiv = document.createElement("div");
+    lineDiv.textContent = currentWords.join(" ");
+    lineDiv.style.display = "block";
+    root
