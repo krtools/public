@@ -59,4 +59,6 @@ function renderVisionAsLines(visionResponse, fontSize = 16, lineGap = 4) {
     const lineDiv = document.createElement("div");
     lineDiv.textContent = currentWords.join(" ");
     lineDiv.style.display = "block";
-    root
+    root.appendChild(lineDiv);
+  }
+}
