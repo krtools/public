@@ -64,7 +64,7 @@ function renderVisionAsLines(visionResponse, fontSize = 16, lineGap = 4) {
 }
 
 
-function renderVisionAsLinesWithGap(visionResponse, fontSize = 16, lineGap = 4) {
+function renderVisionAsLinesWithNewlines(visionResponse, fontSize = 16, doubleGapFactor = 1.5) {
   document.body.innerHTML = "";
 
   const root = document.createElement("div");
@@ -97,6 +97,7 @@ function renderVisionAsLinesWithGap(visionResponse, fontSize = 16, lineGap = 4) 
 
   let currentLineY = -Infinity;
   let currentWords = [];
+  const textLines = [];
 
   anns.forEach(a => {
     const verts = a.boundingPoly?.vertices || [];
@@ -106,15 +107,13 @@ function renderVisionAsLinesWithGap(visionResponse, fontSize = 16, lineGap = 4) 
 
     if (minY - currentLineY > fontSize) {
       if (currentWords.length) {
-        const lineDiv = document.createElement("div");
-        lineDiv.textContent = currentWords.join(" ");
+        // join words for this line
+        textLines.push(currentWords.join(""));
 
-        // if vertical gap > 1.5x fontSize → double spacing
-        const gap = minY - currentLineY;
-        lineDiv.style.display = "block";
-        lineDiv.style.marginBottom = (gap > fontSize * 1.5 ? lineGap * 2 : lineGap) + "px";
-
-        root.appendChild(lineDiv);
+        // add extra blank line if gap is large
+        if (minY - currentLineY > fontSize * doubleGapFactor) {
+          textLines.push(""); // double newline
+        }
       }
       currentWords = [];
       currentLineY = minY;
@@ -125,9 +124,21 @@ function renderVisionAsLinesWithGap(visionResponse, fontSize = 16, lineGap = 4) 
 
   // append last line
   if (currentWords.length) {
-    const lineDiv = document.createElement("div");
-    lineDiv.textContent = currentWords.join(" ");
-    lineDiv.style.display = "block";
-    root.appendChild(lineDiv);
+    textLines.push(currentWords.join(""));
   }
+
+  // Render lines visually
+  textLines.forEach(line => {
+    const div = document.createElement("div");
+    div.textContent = line;
+    div.style.display = "block";
+    root.appendChild(div);
+  });
+
+  // Also dump as <pre> for copy/paste
+  const dump = document.createElement("pre");
+  dump.style.marginTop = "20px";
+  dump.style.whiteSpace = "pre-wrap";
+  dump.textContent = textLines.join("\n");
+  document.body.appendChild(dump);
 }
