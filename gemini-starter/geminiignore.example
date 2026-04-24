@@ -1,0 +1,58 @@
+# Rename this file to .geminiignore and drop into the root of each project.
+# Patterns here are excluded from Gemini CLI's context. Tighter exclusions = better answers.
+
+# Dependencies
+node_modules/
+.pnpm-store/
+vendor/
+
+# Build output
+dist/
+build/
+out/
+.next/
+.nuxt/
+.turbo/
+.cache/
+*.tsbuildinfo
+
+# Generated code
+*.generated.ts
+*.generated.js
+src/generated/
+prisma/generated/
+
+# Lockfiles (context-heavy, rarely useful for reasoning)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs and temp
+*.log
+logs/
+tmp/
+.DS_Store
+
+# Test/coverage artifacts
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# IDE
+.idea/
+.vscode/settings.json
+
+# Large binaries
+*.zip
+*.tar.gz
+*.sqlite
+*.db

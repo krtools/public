@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/schemas/settings.schema.json",
+  "model": {
+    "name": "gemini-3-pro-preview",
+    "maxSessionTurns": -1,
+    "summarizeToolOutput": {
+      "default": { "tokenBudget": 2000 }
+    }
+  },
+  "general": {
+    "checkpointing": { "enabled": true },
+    "preferredEditor": "code",
+    "disableAutoUpdate": false
+  },
+  "ui": {
+    "theme": "Default",
+    "showMemoryUsage": true,
+    "hideFooter": false
+  },
+  "context": {
+    "fileName": ["GEMINI.md", "AGENTS.md"],
+    "importFormat": "tree",
+    "loadMemoryFromIncludeDirectories": true
+  },
+  "tools": {
+    "usePty": true,
+    "shell": {
+      "enableInteractiveShell": true
+    }
+  },
+  "security": {
+    "folderTrust": { "enabled": true },
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp"]
+    }
+  },
+  "experimental": {
+    "extensionManagement": true
+  }
+}
