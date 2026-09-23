@@ -84,6 +84,25 @@ const DEFAULT_CLASSES: Record<AutocompleteSlot, string> = {
     'cursor-pointer rounded-full px-1 text-base leading-none text-zinc-500 hover:bg-zinc-300 hover:text-zinc-900',
 }
 
+// State styling uses data attributes (`data-active:`, `data-selected:`) so the
+// class strings stay static and callers can override them per slot.
+// All utilities use the `tw-` prefix; variants come before it (e.g. `hover:tw-bg-zinc-300`).
+const DEFAULT_CLASSES_TW: Record<AutocompleteSlot, string> = {
+  root: 'tw-relative',
+  label: 'tw-mb-1.5 tw-block tw-text-sm tw-font-semibold',
+  control:
+    'tw-flex tw-flex-wrap tw-items-center tw-gap-1.5 tw-rounded-lg tw-border tw-border-zinc-300 tw-bg-white tw-px-2 tw-py-1.5 focus-within:tw-border-blue-600 focus-within:tw-ring-3 focus-within:tw-ring-blue-600/20',
+  input:
+    'tw-min-w-20 tw-flex-[1_1_120px] tw-bg-transparent tw-p-1 tw-outline-none disabled:tw-cursor-not-allowed',
+  menu: 'tw-absolute tw-inset-x-0 tw-top-full tw-z-10 tw-mt-1 tw-max-h-72 tw-overflow-y-auto tw-rounded-lg tw-border tw-border-zinc-300 tw-bg-white tw-p-1 tw-shadow-lg',
+  item: 'tw-flex tw-cursor-pointer tw-items-center tw-gap-2.5 tw-rounded-md tw-px-2 tw-py-1.5 data-active:tw-bg-blue-50',
+  message: 'tw-px-3 tw-py-2.5 tw-text-sm tw-text-zinc-500',
+  highlight: 'tw-rounded-xs tw-bg-yellow-200 tw-text-inherit',
+  chip: 'tw-inline-flex tw-items-center tw-gap-1 tw-rounded-full tw-border tw-border-zinc-300 tw-bg-zinc-100 tw-py-0.5 tw-pr-1 tw-pl-2 tw-text-sm',
+  chipRemove:
+    'tw-cursor-pointer tw-rounded-full tw-px-1 tw-text-base tw-leading-none tw-text-zinc-500 hover:tw-bg-zinc-300 hover:tw-text-zinc-900',
+}
+
 type Classes = (slot: AutocompleteSlot) => string
 
 function useClasses(classNames: AutocompleteBaseProps<unknown>['classNames']): Classes {
